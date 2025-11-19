@@ -1,17 +1,41 @@
 import TelegramBot from "node-telegram-bot-api";
-const TOKEN =  "7884966007:AAEDoJw5reFpTSk4o1qx3xzum3cBTrMnuiM";
+import { config } from "dotenv";
+config();
+const TOKEN =  process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
 
+
+let usersData = [
+ { chatId: 2107803986, firstName: "𝓈𝒽ℴ𝓍𝓇𝓊𝓍", admin: true },
+ { chatId: 5710316881, firstName: '.' , admin: true}
+
+
+]
+
+
+
 bot.on("message", (msg) => {
+  // console.log(msg);
   const chatId = msg.chat.id;
   const text = msg.text;
   const firstName = msg.chat.first_name;
 
+  //   bot.sendMessage(chatId, text);
+  // start uchun handler
   if (text == "/start") {
+    const userExists = usersData.find((user) => user.chatId === chatId);
+
+    console.log(!!userExists);
+
+    if (!userExists) {
+      usersData = [...usersData, { chatId: chatId, firstName: firstName }];
+    }
+
+    console.log(usersData);
     bot.sendMessage(
-      chatId,
+      chatId, 
       `
-👋 Assalomu alaykum, ${firstName}!
+        👋 Assalomu alaykum, ${firstName}!
 
 📚 100x Academy o‘quv markazining rasmiy botiga xush kelibsiz!
 
@@ -21,7 +45,8 @@ Bu bot orqali siz:
 • Jadval va to‘lovlar haqida ma’lumot olasiz  
 
 Quyidagi menyudan kerakli bo‘limni tanlang 👇
-      `,
+
+        `,
       {
         reply_markup: {
           keyboard: [
@@ -38,14 +63,14 @@ Quyidagi menyudan kerakli bo‘limni tanlang 👇
       chatId,
       `🎓 Bizning o‘quv markazimizda quyidagi kurslar mavjud:
 
-1️⃣ Ingliz tili  
-2️⃣ Rus tili  
-3️⃣ Matematika  
-4️⃣ Dasturlash (Python, Web)  
-5️⃣ Grafik dizayn  
-
-👇 Quyidagi kurslardan birini tanlang va batafsil ma’lumot oling:
-      `,
+    1️⃣ Ingliz tili  
+    2️⃣ Rus tili  
+    3️⃣ Matematika  
+    4️⃣ Dasturlash (Python, Web)  
+    5️⃣ Grafik dizayn  
+    
+    👇 Quyidagi kurslardan birini tanlang va batafsil ma’lumot oling:
+    `,
       {
         reply_markup: {
           inline_keyboard: [
@@ -58,20 +83,35 @@ Quyidagi menyudan kerakli bo‘limni tanlang 👇
         },
       }
     );
+  } else if (text == "✍️ Ro‘yxatdan o‘tish") {
+    for (let tgUser of usersData) {
+      if (tgUser.admin === true) {
+        bot.sendMessage(
+          tgUser.chatId,
+          `Yangi xabar ✅\nUser: ${firstName}\nchatId: ${chatId}`
+        );
+      }
+    }
+
+    bot.sendMessage(
+      chatId,
+      `Ma'lumotlaringiz saqlandi va operatorlarimizga yuborildi ✅`
+    );
   } else {
     bot.sendMessage(
       chatId,
       `
-⚠️ Kechirasiz, men sizning xabaringizni tushunmadim.
+    ⚠️ Kechirasiz, men sizning xabaringizni tushunmadim.
 
 Iltimos, quyidagi tugmani bosing 👇
 /start
-      `
+
+    `
     );
   }
 });
 
-// 🟢 Callback so‘rovlar uchun handler
+
 bot.on("callback_query", (query) => {
   const chatId = query.message.chat.id;
   const data = query.data;
