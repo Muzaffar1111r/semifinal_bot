@@ -1,6 +1,20 @@
 import TelegramBot from "node-telegram-bot-api";
 import { config } from "dotenv";
 config();
+
+import mongoose from "mongoose";
+config();
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("Db is connected...");
+  })
+  .catch(() => {
+    console.log("Error: db is not connected...!!");
+    
+  });
+
 const TOKEN =  process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
 
