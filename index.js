@@ -5,6 +5,10 @@ const TOKEN =  process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
 
 
+
+
+
+
 let usersData = [
  { chatId: 2107803986, firstName: "𝓈𝒽ℴ𝓍𝓇𝓊𝓍", admin: true },
  { chatId: 5710316881, firstName: '.' , admin: true}
